@@ -14,6 +14,7 @@ import java.awt.event.MouseEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.image.BufferedImage;
+import java.io.ByteArrayInputStream;
 import java.io.FileInputStream;
 import java.math.BigDecimal;
 import java.sql.Blob;
@@ -21,6 +22,8 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 
+
+import javax.swing.Icon;
 import javax.imageio.ImageIO;
 import javax.swing.DefaultListModel;
 import javax.swing.ImageIcon;
@@ -54,6 +57,8 @@ public class Centertoy extends JFrame {
 	private FileInputStream fis;
 
 	private int tamanho;
+	
+	private boolean fotoCarregada = false;
 
 	private static final long serialVersionUID = 1L;
 	private JPanel contentPane;
@@ -64,6 +69,11 @@ public class Centertoy extends JFrame {
 	private JLabel lblFoto;
 	private JScrollPane scrollPaneListar;
 	private JList listNomes;
+	private JButton btnAdicionar;
+	private JButton btnLimpar;
+	private JButton btnExcluir;
+	private JButton btnEditar;
+	private JButton btnCadastrar;
 
 	/**
 	 * Launch the application.
@@ -107,17 +117,17 @@ public class Centertoy extends JFrame {
 		scrollPaneListar = new JScrollPane();
 		scrollPaneListar.setBorder(null);
 		scrollPaneListar.setVisible(false);
-		scrollPaneListar.setBounds(92, 226, 330, 117);
+		scrollPaneListar.setBounds(92, 248, 332, 95);
 		contentPane.add(scrollPaneListar);
 		
 		listNomes = new JList();
+		scrollPaneListar.setViewportView(listNomes);
 		listNomes.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
 				buscarProdutos();
 			}
 		});
-		scrollPaneListar.setViewportView(listNomes);
 		listNomes.setBorder(null);
 
 		JLabel lblNewLabel = new JLabel("Cadastrar produtos");
@@ -203,7 +213,7 @@ public class Centertoy extends JFrame {
 		lblFoto.setBounds(647, 216, 144, 157);
 		contentPane.add(lblFoto);
 
-		JButton btnCadastrar = new JButton("Cadastrar");
+		btnCadastrar = new JButton("Cadastrar");
 		btnCadastrar.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				cadastra();
@@ -216,7 +226,7 @@ public class Centertoy extends JFrame {
 		btnCadastrar.setBounds(176, 427, 144, 54);
 		contentPane.add(btnCadastrar);
 
-		JButton btnAdicionar = new JButton("Adicionar imagem");
+		btnAdicionar = new JButton("Adicionar imagem");
 		btnAdicionar.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				adicionarFoto();
@@ -229,7 +239,7 @@ public class Centertoy extends JFrame {
 		btnAdicionar.setBounds(543, 428, 160, 54);
 		contentPane.add(btnAdicionar);
 
-		JButton btnLimpar = new JButton("");
+		btnLimpar = new JButton("");
 		btnLimpar.setIcon(new ImageIcon(Centertoy.class.getResource("/img/replay.png")));
 		btnLimpar.setToolTipText("Limpar Campo");
 		btnLimpar.addActionListener(new ActionListener() {
@@ -244,7 +254,13 @@ public class Centertoy extends JFrame {
 		btnLimpar.setBounds(710, 427, 50, 50);
 		contentPane.add(btnLimpar);
 		
-		JButton btnExcluir = new JButton("");
+		btnExcluir = new JButton("");
+		btnExcluir.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				excluir();
+				
+			}
+		});
 		btnExcluir.setToolTipText("Excluir");
 		btnExcluir.setIcon(new ImageIcon(Centertoy.class.getResource("/img/trash.png")));
 		btnExcluir.setForeground(Color.YELLOW);
@@ -253,7 +269,12 @@ public class Centertoy extends JFrame {
 		btnExcluir.setBounds(770, 427, 50, 50);
 		contentPane.add(btnExcluir);
 		
-		JButton btnEditar = new JButton("");
+		btnEditar = new JButton("");
+		btnEditar.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				editarProduto();
+			}
+		});
 		btnEditar.setToolTipText("Editar");
 		btnEditar.setIcon(new ImageIcon(Centertoy.class.getResource("/img/edit.png")));
 		btnEditar.setForeground(Color.YELLOW);
@@ -382,7 +403,19 @@ public class Centertoy extends JFrame {
 					Blob blob = (Blob) rs.getBlob(7);
 					byte[] img = blob.getBytes(1, (int) blob.length());
 					BufferedImage imagem = null;
-					
+					try {
+						imagem = ImageIO.read(new ByteArrayInputStream(img));
+					} catch (Exception e) {
+						System.out.println(e);
+					}
+					ImageIcon icone = new ImageIcon(imagem);
+					Icon foto = new ImageIcon(icone.getImage().getScaledInstance(lblFoto.getWidth(), lblFoto.getHeight(), Image.SCALE_SMOOTH));
+					lblFoto.setIcon(foto);
+					lblFoto.setIcon(foto);
+					btnAdicionar.setEnabled(true);
+					btnCadastrar.setEnabled(true);
+					btnEditar.setEnabled(true);
+					btnExcluir.setEnabled(true);
 				}
 			} catch (Exception e) {
 				
@@ -403,6 +436,7 @@ public class Centertoy extends JFrame {
 						lblFoto.getHeight(), Image.SCALE_SMOOTH);
 				lblFoto.setIcon(new ImageIcon(foto));
 				lblFoto.updateUI();
+				setFotoCarregada(true);
 			} catch (Exception e) {
 				System.out.println(e);
 			}
@@ -410,12 +444,101 @@ public class Centertoy extends JFrame {
 
 	}
 	
+	private void editarProduto() {
+		if (txtNome.getText().isEmpty()) {
+			JOptionPane.showConfirmDialog(null, "Preencha o nome");
+			txtNome.requestFocus();
+		}else {
+			if (fotoCarregada == true) {
+				Categoria categoriaEnum = (Categoria) comboBoxCategoria.getSelectedItem();
+				String update = "update brinquedos set fabricacao=?, categoria=?, faixa_etaria=?, preco=?, foto=? where nome=? ";
+				try {
+					con = dao.conectar();
+					pst = con.prepareStatement(update);
+					pst.setString(1, txtDataF.getText());
+					pst.setString(2, categoriaEnum.getDescricao());
+					pst.setString(3, txtFaixa.getText());
+					BigDecimal preco = new BigDecimal(txtPreco.getText());
+					pst.setBigDecimal(4, preco);
+					pst.setBlob(5, fis, tamanho);
+					pst.setString(6, txtNome.getText());
+					int confirma = pst.executeUpdate();
+					if (confirma == 1) {
+						JOptionPane.showConfirmDialog(null, "Dados do produtos alterado com sucesso");
+						reset();
+					}else {
+						JOptionPane.showMessageDialog(null, "Erro ao alterar os dados");
+					}
+					con.close();
+				} catch (Exception e) {
+					System.out.println(e);
+				}
+			}else {
+				Categoria categoriaEnum = (Categoria) comboBoxCategoria.getSelectedItem();
+				String update = "update brinquedos set fabricacao=?, categoria=?, faixa_etaria=?, preco=? where nome=? ";
+				try {
+					con = dao.conectar();
+					pst = con.prepareStatement(update);
+					pst.setString(1, txtDataF.getText());
+					pst.setString(2, categoriaEnum.getDescricao());
+					pst.setString(3, txtFaixa.getText());
+					BigDecimal preco = new BigDecimal(txtPreco.getText());
+					pst.setBigDecimal(4, preco);
+					pst.setString(5, txtNome.getText());
+					int confirma = pst.executeUpdate();
+					if (confirma == 1) {
+						JOptionPane.showConfirmDialog(null, "Dados do produtos alterado com sucesso");
+						reset();
+					}else {
+						JOptionPane.showMessageDialog(null, "Erro ao alterar os dados");
+					}
+					con.close();
+				} catch (Exception e) {
+					System.out.println(e);
+				}
+			}
+		}
+	}
+	
+	private void excluir() {
+		int confirmarExcluir =  JOptionPane.showConfirmDialog(null, "Confirma a exclusão de Produto?", "Atenção", JOptionPane.YES_NO_OPTION);
+		if(confirmarExcluir == JOptionPane.YES_OPTION) {
+		String deletar = "delete from brinquedos where nome=?";
+		try {
+			con = dao.conectar();
+			pst = con.prepareStatement(deletar);
+			pst.setString(1, txtNome.getText());
+			int confirmar = pst.executeUpdate();
+			if (confirmar == 1 ) {
+				reset();
+				JOptionPane.showMessageDialog(null, "Produto excluido com sucesso");
+			}
+			con.close();
+		} catch (Exception e) {
+			System.out.println(e);
+		}
+		}
+	}
+	
 	private void reset() {
 		txtNome.setText(null);
+		lblFoto.setIcon(new ImageIcon(Centertoy.class.getResource("/img/camera.png")));
 		txtDataF.setText(null);
 		txtFaixa.setText(null);
 		txtPreco.setText(null);
 		comboBoxCategoria.setSelectedItem(null);
+		setFotoCarregada(false);
+		tamanho = 0;
+		btnEditar.setEnabled(false);
+		btnExcluir.setEnabled(false);
 		
+	}
+
+	public boolean isFotoCarregada() {
+		return fotoCarregada;
+	}
+
+	public void setFotoCarregada(boolean fotoCarregada) {
+		this.fotoCarregada = fotoCarregada;
 	}
 }
