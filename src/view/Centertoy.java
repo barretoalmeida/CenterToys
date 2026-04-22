@@ -109,7 +109,7 @@ public class Centertoy extends JFrame {
 		setBounds(100, 100, 994, 604);
 
 		contentPane = new JPanel();
-		contentPane.setBackground(new Color(247, 232, 202));
+		contentPane.setBackground(new Color(252, 226, 167));
 		contentPane.setBorder(new BevelBorder(BevelBorder.LOWERED, null, null, null, null));
 		setContentPane(contentPane);
 		contentPane.setLayout(null);
