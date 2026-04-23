@@ -16,16 +16,18 @@ import java.awt.event.WindowEvent;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.math.BigDecimal;
 import java.sql.Blob;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.text.DateFormat;
+import java.util.Date;
 
-
-import javax.swing.Icon;
 import javax.imageio.ImageIO;
 import javax.swing.DefaultListModel;
+import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
@@ -38,8 +40,13 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
-import javax.swing.border.BevelBorder;
 import javax.swing.filechooser.FileNameExtensionFilter;
+
+import com.itextpdf.text.Document;
+import com.itextpdf.text.Paragraph;
+import com.itextpdf.text.pdf.PdfPCell;
+import com.itextpdf.text.pdf.PdfPTable;
+import com.itextpdf.text.pdf.PdfWriter;
 
 import model.Categoria;
 import model.DAO;
@@ -68,12 +75,14 @@ public class Centertoy extends JFrame {
 	private JTextField txtPreco;
 	private JLabel lblFoto;
 	private JScrollPane scrollPaneListar;
-	private JList listNomes;
+	private JList <String> listNomes;
 	private JButton btnAdicionar;
 	private JButton btnLimpar;
 	private JButton btnExcluir;
 	private JButton btnEditar;
 	private JButton btnCadastrar;
+	private JButton btnInfo;
+	private JButton btnPdf;
 
 	/**
 	 * Launch the application.
@@ -110,7 +119,7 @@ public class Centertoy extends JFrame {
 
 		contentPane = new JPanel();
 		contentPane.setBackground(new Color(252, 226, 167));
-		contentPane.setBorder(new BevelBorder(BevelBorder.LOWERED, null, null, null, null));
+		contentPane.setBorder(null);
 		setContentPane(contentPane);
 		contentPane.setLayout(null);
 		
@@ -120,7 +129,7 @@ public class Centertoy extends JFrame {
 		scrollPaneListar.setBounds(92, 248, 332, 95);
 		contentPane.add(scrollPaneListar);
 		
-		listNomes = new JList();
+		listNomes = new JList <String>();
 		scrollPaneListar.setViewportView(listNomes);
 		listNomes.addMouseListener(new MouseAdapter() {
 			@Override
@@ -131,13 +140,14 @@ public class Centertoy extends JFrame {
 		listNomes.setBorder(null);
 
 		JLabel lblNewLabel = new JLabel("Cadastrar produtos");
-		lblNewLabel.setFont(new Font("Arial Rounded MT Bold", Font.PLAIN, 45));
-		lblNewLabel.setBounds(418, 62, 430, 67);
+		lblNewLabel.setForeground(new Color(0, 103, 206));
+		lblNewLabel.setFont(new Font("Arial Rounded MT Bold", Font.PLAIN, 47));
+		lblNewLabel.setBounds(352, 32, 473, 67);
 		contentPane.add(lblNewLabel);
 
 		JLabel lblLogo = new JLabel("");
 		lblLogo.setIcon(new ImageIcon(Centertoy.class.getResource("/img/logo (1).png")));
-		lblLogo.setBounds(151, 11, 169, 169);
+		lblLogo.setBounds(122, 31, 169, 169);
 		contentPane.add(lblLogo);
 
 		JLabel lblNome = new JLabel("Nome:");
@@ -208,9 +218,10 @@ public class Centertoy extends JFrame {
 		
 
 		lblFoto = new JLabel("");
-		lblFoto.setIcon(new ImageIcon(Centertoy.class.getResource("/img/camera.png")));
+		lblFoto.setForeground(new Color(255, 255, 255));
+		lblFoto.setIcon(new ImageIcon(Centertoy.class.getResource("/img/Iconcamera.png")));
 		lblFoto.setBackground(new Color(255, 255, 255));
-		lblFoto.setBounds(647, 216, 144, 157);
+		lblFoto.setBounds(603, 131, 266, 212);
 		contentPane.add(lblFoto);
 
 		btnCadastrar = new JButton("Cadastrar");
@@ -236,7 +247,7 @@ public class Centertoy extends JFrame {
 		btnAdicionar.setForeground(new Color(0, 128, 255));
 		btnAdicionar.setFont(new Font("Arial Rounded MT Bold", Font.PLAIN, 13));
 		btnAdicionar.setBackground(new Color(255, 221, 26));
-		btnAdicionar.setBounds(543, 428, 160, 54);
+		btnAdicionar.setBounds(647, 370, 160, 54);
 		contentPane.add(btnAdicionar);
 
 		btnLimpar = new JButton("");
@@ -251,7 +262,7 @@ public class Centertoy extends JFrame {
 		btnLimpar.setForeground(new Color(255, 255, 0));
 		btnLimpar.setFont(new Font("Arial Rounded MT Bold", Font.PLAIN, 13));
 		btnLimpar.setBackground(new Color(250, 61, 33));
-		btnLimpar.setBounds(710, 427, 50, 50);
+		btnLimpar.setBounds(635, 444, 50, 50);
 		contentPane.add(btnLimpar);
 		
 		btnExcluir = new JButton("");
@@ -266,7 +277,7 @@ public class Centertoy extends JFrame {
 		btnExcluir.setForeground(Color.YELLOW);
 		btnExcluir.setFont(new Font("Arial Rounded MT Bold", Font.PLAIN, 13));
 		btnExcluir.setBackground(new Color(250, 234, 37));
-		btnExcluir.setBounds(770, 427, 50, 50);
+		btnExcluir.setBounds(708, 444, 50, 50);
 		contentPane.add(btnExcluir);
 		
 		btnEditar = new JButton("");
@@ -280,7 +291,7 @@ public class Centertoy extends JFrame {
 		btnEditar.setForeground(Color.YELLOW);
 		btnEditar.setFont(new Font("Arial Rounded MT Bold", Font.PLAIN, 13));
 		btnEditar.setBackground(new Color(46, 79, 233));
-		btnEditar.setBounds(830, 427, 50, 50);
+		btnEditar.setBounds(791, 444, 50, 50);
 		contentPane.add(btnEditar);
 		
 		JLabel lblPesquisar = new JLabel("");
@@ -288,6 +299,30 @@ public class Centertoy extends JFrame {
 		lblPesquisar.setToolTipText("Pesquisar");
 		lblPesquisar.setBounds(429, 224, 24, 26);
 		contentPane.add(lblPesquisar);
+		
+		btnInfo = new JButton("");
+		btnInfo.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				Sobre sobre = new Sobre();
+				sobre.setVisible(true);
+			}
+		});
+		btnInfo.setIcon(new ImageIcon(Centertoy.class.getResource("/img/info.png")));
+		btnInfo.setBounds(914, 517, 38, 37);
+		contentPane.add(btnInfo);
+		
+		btnPdf = new JButton("");
+		btnPdf.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				gerarPdf();
+			}
+		});
+		btnPdf.setBorder(null);
+		btnPdf.setToolTipText("Gerar PDF dos produtos");
+		btnPdf.setBackground(new Color(252, 226, 167));
+		btnPdf.setIcon(new ImageIcon(Centertoy.class.getResource("/img/pdf.png")));
+		btnPdf.setBounds(328, 427, 44, 54);
+		contentPane.add(btnPdf);
 
 	}
 
@@ -416,6 +451,7 @@ public class Centertoy extends JFrame {
 					btnCadastrar.setEnabled(true);
 					btnEditar.setEnabled(true);
 					btnExcluir.setEnabled(true);
+					btnPdf.setEnabled(false);
 				}
 			} catch (Exception e) {
 				
@@ -520,6 +556,65 @@ public class Centertoy extends JFrame {
 		}
 	}
 	
+	public boolean isFotoCarregada() {
+		return fotoCarregada;
+	}
+
+	public void setFotoCarregada(boolean fotoCarregada) {
+		this.fotoCarregada = fotoCarregada;
+	}
+	
+	private void gerarPdf() {
+		Document document = new Document();
+		// gerar o documento em pdf
+		try {
+			PdfWriter.getInstance(document, new FileOutputStream("center_toy.pdf"));
+			document.open();
+			Date date = new Date();
+			DateFormat formatador = DateFormat.getDateInstance(DateFormat.FULL);
+			//System.out.println(getClass().getResource("/img/logo (1).png")); //teste
+			/*java.net.URL url = getClass().getResource("/img/logo (1).png");
+
+			if (url == null) {
+			    System.out.println("Imagem NÃO encontrada!");
+			} else {
+			    Image img = Image.getInstance(url);
+			    img.scaleToFit(150, 150);
+			    img.setAlignment(Image.ALIGN_CENTER);
+
+			    document.add(img);
+			}*/
+			document.add(new Paragraph(formatador.format(date)));
+			document.add(new Paragraph ("Loja Center Toy"));
+			document.add(new Paragraph (" "));
+			//gerando a tabela
+			PdfPTable tabela = new PdfPTable(6);
+			PdfPCell col1 = new PdfPCell(new Paragraph("Nome"));
+			tabela.addCell(col1);
+			PdfPCell col2 = new PdfPCell(new Paragraph("Data de fabricação"));
+			tabela.addCell(col2);
+			PdfPCell col3 = new PdfPCell(new Paragraph("Categoria"));
+			tabela.addCell(col3);
+			PdfPCell col4 = new PdfPCell(new Paragraph("Faxia Etaria"));
+			tabela.addCell(col4);
+			PdfPCell col5 = new PdfPCell(new Paragraph("Preço"));
+			tabela.addCell(col5);
+			String readLista =  "select * from alunos order by nome";
+			try {
+				
+			} catch (Exception ex) {
+				System.out.println(ex);
+			}
+			
+			
+		
+		}catch (Exception e) {
+			System.out.println(e);
+		}finally {
+			document.close();
+		}
+	}
+	
 	private void reset() {
 		txtNome.setText(null);
 		lblFoto.setIcon(new ImageIcon(Centertoy.class.getResource("/img/camera.png")));
@@ -531,14 +626,9 @@ public class Centertoy extends JFrame {
 		tamanho = 0;
 		btnEditar.setEnabled(false);
 		btnExcluir.setEnabled(false);
+		btnPdf.setEnabled(true);
 		
 	}
 
-	public boolean isFotoCarregada() {
-		return fotoCarregada;
-	}
 
-	public void setFotoCarregada(boolean fotoCarregada) {
-		this.fotoCarregada = fotoCarregada;
-	}
 }

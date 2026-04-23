@@ -1,20 +1,20 @@
 package view;
 
 import java.awt.BorderLayout;
-import java.awt.FlowLayout;
+import java.awt.Color;
+import java.awt.Desktop;
+import java.awt.Font;
+import java.awt.Toolkit;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.net.URI;
 
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JDialog;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
-import java.awt.Toolkit;
-import javax.swing.JLabel;
-import java.awt.Font;
-import java.awt.Color;
-import java.awt.event.ActionListener;
-import java.awt.event.ActionEvent;
-import javax.swing.ImageIcon;
-import javax.swing.JTextField;
 
 public class Sobre extends JDialog {
 
@@ -81,6 +81,16 @@ public class Sobre extends JDialog {
 			btnGitHubG.setIcon(new ImageIcon(Sobre.class.getResource("/img/github.png")));
 			btnGitHubG.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
+					link("https://github.com/barretoalmeida");
+				}
+				private void link(String url) {
+					Desktop desktop = Desktop.getDesktop(); 
+					try {
+						URI uri = new URI (url);
+						desktop.browse(uri);
+					} catch (Exception e) {
+						System.out.println(e);
+					}
 				}
 			});
 			btnGitHubG.setBounds(227, 87, 32, 32);
@@ -88,24 +98,71 @@ public class Sobre extends JDialog {
 		}
 		{
 			JButton btnGitHubV = new JButton("");
+			btnGitHubV.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent e) {
+					link("https://github.com/vcorreasantos");
+				}
+				private void link(String url) {
+					Desktop desktop = Desktop.getDesktop(); 
+					try {
+						URI uri = new URI (url);
+						desktop.browse(uri);
+					} catch (Exception e) {
+						System.out.println(e);
+					}
+				}
+			});
 			btnGitHubV.setIcon(new ImageIcon(Sobre.class.getResource("/img/github.png")));
 			btnGitHubV.setBounds(269, 128, 32, 32);
 			contentPanel.add(btnGitHubV);
 		}
 		{
 			JButton btnGitHubA = new JButton("");
+			btnGitHubA.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent e) {
+					link("https://github.com/AnnaLuSant");
+				}
+				private void link(String url) {
+					Desktop desktop = Desktop.getDesktop(); 
+					try {
+						URI uri = new URI (url);
+						desktop.browse(uri);
+					} catch (Exception e) {
+						System.out.println(e);
+					}
+				}
+			});
 			btnGitHubA.setIcon(new ImageIcon(Sobre.class.getResource("/img/github.png")));
 			btnGitHubA.setBounds(217, 171, 32, 32);
 			contentPanel.add(btnGitHubA);
 		}
 		{
 			JButton btnGitHubP = new JButton("");
+			btnGitHubP.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent e) {
+					link("https://github.com/pedrohreismarques");
+				}
+				private void link(String url) {
+					Desktop desktop = Desktop.getDesktop(); 
+					try {
+						URI uri = new URI (url);
+						desktop.browse(uri);
+					} catch (Exception e) {
+						System.out.println(e);
+					}
+				}
+			});
 			btnGitHubP.setIcon(new ImageIcon(Sobre.class.getResource("/img/github.png")));
 			btnGitHubP.setBounds(205, 212, 32, 32);
 			contentPanel.add(btnGitHubP);
 		}
 		{
 			JButton btnok = new JButton("OK");
+			btnok.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent e) {
+					dispose();
+				}
+			});
 			btnok.setBounds(255, 296, 89, 23);
 			contentPanel.add(btnok);
 		}
