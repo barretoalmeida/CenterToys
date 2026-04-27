@@ -4,7 +4,7 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 
 public class DAO {
-	/*private Connection con;
+	private Connection con;
 	private String driver = "com.mysql.cj.jdbc.Driver";
 	private String url = "jdbc:mysql://localhost:3306/centertoys";
 	private String user = "root";
@@ -19,10 +19,10 @@ public class DAO {
 			System.out.println(e);
 			return null;
 		}
-	}*/
+	}
 	
 	
-	private Connection con;
+	/*private Connection con;
 	private String driver = "com.mysql.cj.jdbc.Driver";
 	private String url = "jdbc:mysql://localhost:3306/centertoys";
 	private String user = "root";
@@ -37,6 +37,6 @@ public class DAO {
 			System.out.println(e);
 			return null;
 		}
-	}
+	}*/
 
 }

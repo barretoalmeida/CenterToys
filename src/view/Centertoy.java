@@ -43,6 +43,8 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 import javax.swing.filechooser.FileNameExtensionFilter;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 
 import com.itextpdf.text.BaseColor;
 import com.itextpdf.text.Document;
@@ -50,6 +52,7 @@ import com.itextpdf.text.Paragraph;
 import com.itextpdf.text.pdf.PdfPCell;
 import com.itextpdf.text.pdf.PdfPTable;
 import com.itextpdf.text.pdf.PdfWriter;
+
 
 import model.Categoria;
 import model.DAO;
@@ -163,9 +166,23 @@ public class Centertoy extends JFrame {
 			@Override
 			public void keyReleased(KeyEvent e) {
 				listarProdutos();
+				
+			}
+			
+			public void keyPressed(KeyEvent e) {
+				if (e.getKeyCode()== KeyEvent.VK_ENTER) {
+					scrollPaneListar.setVisible(false);
+					int confirma = JOptionPane.showConfirmDialog(null, "Produto não cadastrado \n Deseja cadastra um novo produto? ", "Aviso", JOptionPane.YES_OPTION);
+					if (confirma == JOptionPane.YES_OPTION) {
+						txtNome.requestFocus();
+						btnCadastrar.setEnabled(true);
+					}else {
+						reset();
+					}
+				}
 			}
 		});
-		txtNome.setBounds(92, 226, 332, 20);
+		txtNome.setBounds(81, 226, 332, 20);
 		contentPane.add(txtNome);
 		txtNome.setColumns(10);
 		txtNome.setDocument(new Validador(30));
@@ -367,7 +384,11 @@ public class Centertoy extends JFrame {
 				con = dao.conectar();
 				pst = con.prepareStatement(insert);
 				pst.setString(1, txtNome.getText());
-				pst.setString(2, txtDataF.getText());
+				//pst.setString(2, txtDataF.getText());
+				DateTimeFormatter formatoBR = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+				LocalDate data = LocalDate.parse(txtDataF.getText(), formatoBR);
+
+				pst.setDate(2, java.sql.Date.valueOf(data));
 				pst.setString(3, categoriaEnum.getDescricao());
 				pst.setString(4, txtFaixa.getText());
 				BigDecimal preco = new BigDecimal(txtPreco.getText());
@@ -427,8 +448,12 @@ public class Centertoy extends JFrame {
 				while (rs.next()){
 					scrollPaneListar.setVisible(false);
 					txtNome.setText(rs.getString(2));
-					txtDataF.setText(rs.getString(3));
-					//categoriaEnum.setDescricao(rs.getString(3));
+					//txtDataF.setText(rs.getString(3));
+					LocalDate data = rs.getDate(3).toLocalDate();
+					DateTimeFormatter formatoBR = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+
+					txtDataF.setText(data.format(formatoBR));
+					
 					String categoriaBanco = rs.getString(4);
 					for (Categoria c : Categoria.values()) {
 					    if (c.getDescricao().equals(categoriaBanco)) {
@@ -494,7 +519,13 @@ public class Centertoy extends JFrame {
 				try {
 					con = dao.conectar();
 					pst = con.prepareStatement(update);
-					pst.setString(1, txtDataF.getText());
+					//pst.setString(1, txtDataF.getText());
+					 System.out.println("Data digitada: " + txtDataF.getText());
+
+					DateTimeFormatter formatoBR = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+				    LocalDate data = LocalDate.parse(txtDataF.getText(), formatoBR);
+
+				    pst.setDate(1, java.sql.Date.valueOf(data));
 					pst.setString(2, categoriaEnum.getDescricao());
 					pst.setString(3, txtFaixa.getText());
 					BigDecimal preco = new BigDecimal(txtPreco.getText());
@@ -510,7 +541,9 @@ public class Centertoy extends JFrame {
 					}
 					con.close();
 				} catch (Exception e) {
-					System.out.println(e);
+					//System.out.println(e);
+					 JOptionPane.showMessageDialog(null, "Data inválida! Use dd/MM/yyyy");
+					    return;
 				}
 			}else {
 				Categoria categoriaEnum = (Categoria) comboBoxCategoria.getSelectedItem();
@@ -518,7 +551,11 @@ public class Centertoy extends JFrame {
 				try {
 					con = dao.conectar();
 					pst = con.prepareStatement(update);
-					pst.setString(1, txtDataF.getText());
+					//pst.setString(1, txtDataF.getText());
+					DateTimeFormatter formatoBR = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+					LocalDate data = LocalDate.parse(txtDataF.getText(), formatoBR);
+
+					pst.setDate(1, java.sql.Date.valueOf(data));
 					pst.setString(2, categoriaEnum.getDescricao());
 					pst.setString(3, txtFaixa.getText());
 					BigDecimal preco = new BigDecimal(txtPreco.getText());
@@ -576,10 +613,6 @@ public class Centertoy extends JFrame {
 			Date date = new Date();
 			DateFormat formatador = DateFormat.getDateInstance(DateFormat.FULL);
 			//System.out.println(getClass().getResource("/img/logo (1).png")); //teste
-			Paragraph titulo = new Paragraph("Loja Center Toy");
-			titulo.setAlignment(Paragraph.ALIGN_CENTER);
-
-			document.add(titulo);
 			com.itextpdf.text.Image img = com.itextpdf.text.Image.getInstance(
 				    getClass().getResource("/img/logo (1).png")
 				);
@@ -594,25 +627,30 @@ public class Centertoy extends JFrame {
 			PdfPTable tabela = new PdfPTable(6);
 			BaseColor azul = new BaseColor(0, 121, 182);
 			
-			PdfPCell col1 = new PdfPCell(new Paragraph("Nome"));
+			com.itextpdf.text.Font fonteCabecalho = new com.itextpdf.text.Font();
+			fonteCabecalho.setSize(12);
+			fonteCabecalho.setStyle(com.itextpdf.text.Font.BOLD);
+			fonteCabecalho.setColor(com.itextpdf.text.BaseColor.WHITE);
+			
+			PdfPCell col1 = new PdfPCell(new Paragraph("Nomes",fonteCabecalho));
 			col1.setBackgroundColor(azul);
 			tabela.addCell(col1);
-			PdfPCell col2 = new PdfPCell(new Paragraph("Data de fabricação"));
+			PdfPCell col2 = new PdfPCell(new Paragraph("Data de fabricação",fonteCabecalho));
 			col2.setBackgroundColor(azul);
 			tabela.addCell(col2);
-			PdfPCell col3 = new PdfPCell(new Paragraph("Categoria"));
+			PdfPCell col3 = new PdfPCell(new Paragraph("Categoria", fonteCabecalho));
 			col3.setBackgroundColor(azul);
 			tabela.addCell(col3);
-			PdfPCell col4 = new PdfPCell(new Paragraph("Faxia Etaria"));
+			PdfPCell col4 = new PdfPCell(new Paragraph("Faxia Etaria", fonteCabecalho));
 			col4.setBackgroundColor(azul);
 			tabela.addCell(col4);
-			PdfPCell col5 = new PdfPCell(new Paragraph("Preço"));
+			PdfPCell col5 = new PdfPCell(new Paragraph("Preço", fonteCabecalho));
 			col5.setBackgroundColor(azul);
 			tabela.addCell(col5);
-			PdfPCell col6 = new PdfPCell(new Paragraph ("Imagem"));
+			PdfPCell col6 = new PdfPCell(new Paragraph ("Imagem", fonteCabecalho));
 			col6.setBackgroundColor(azul);
 			tabela.addCell(col6);
-
+			tabela.setWidthPercentage(100);
 			
 			String readLista =  "select * from brinquedos order by nome";
 			try {
@@ -649,7 +687,7 @@ public class Centertoy extends JFrame {
 	
 	private void reset() {
 		txtNome.setText(null);
-		lblFoto.setIcon(new ImageIcon(Centertoy.class.getResource("/img/camera.png")));
+		lblFoto.setIcon(new ImageIcon(Centertoy.class.getResource("/img/Iconcamera.png")));
 		txtDataF.setText(null);
 		txtFaixa.setText(null);
 		txtPreco.setText(null);
