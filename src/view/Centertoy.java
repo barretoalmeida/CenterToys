@@ -1,6 +1,7 @@
 package view;
 
 import java.awt.Color;
+import java.awt.Desktop;
 import java.awt.EventQueue;
 import java.awt.Font;
 import java.awt.Image;
@@ -15,6 +16,7 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.math.BigDecimal;
@@ -42,6 +44,7 @@ import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
+import com.itextpdf.text.BaseColor;
 import com.itextpdf.text.Document;
 import com.itextpdf.text.Paragraph;
 import com.itextpdf.text.pdf.PdfPCell;
@@ -573,45 +576,74 @@ public class Centertoy extends JFrame {
 			Date date = new Date();
 			DateFormat formatador = DateFormat.getDateInstance(DateFormat.FULL);
 			//System.out.println(getClass().getResource("/img/logo (1).png")); //teste
-			/*java.net.URL url = getClass().getResource("/img/logo (1).png");
+			Paragraph titulo = new Paragraph("Loja Center Toy");
+			titulo.setAlignment(Paragraph.ALIGN_CENTER);
 
-			if (url == null) {
-			    System.out.println("Imagem NÃO encontrada!");
-			} else {
-			    Image img = Image.getInstance(url);
-			    img.scaleToFit(150, 150);
-			    img.setAlignment(Image.ALIGN_CENTER);
+			document.add(titulo);
+			com.itextpdf.text.Image img = com.itextpdf.text.Image.getInstance(
+				    getClass().getResource("/img/logo (1).png")
+				);
 
-			    document.add(img);
-			}*/
+				img.scaleToFit(150, 150); // redimensiona
+				img.setAlignment(com.itextpdf.text.Image.ALIGN_CENTER);
+
+				document.add(img);
 			document.add(new Paragraph(formatador.format(date)));
-			document.add(new Paragraph ("Loja Center Toy"));
 			document.add(new Paragraph (" "));
 			//gerando a tabela
 			PdfPTable tabela = new PdfPTable(6);
+			BaseColor azul = new BaseColor(0, 121, 182);
+			
 			PdfPCell col1 = new PdfPCell(new Paragraph("Nome"));
+			col1.setBackgroundColor(azul);
 			tabela.addCell(col1);
 			PdfPCell col2 = new PdfPCell(new Paragraph("Data de fabricação"));
+			col2.setBackgroundColor(azul);
 			tabela.addCell(col2);
 			PdfPCell col3 = new PdfPCell(new Paragraph("Categoria"));
+			col3.setBackgroundColor(azul);
 			tabela.addCell(col3);
 			PdfPCell col4 = new PdfPCell(new Paragraph("Faxia Etaria"));
+			col4.setBackgroundColor(azul);
 			tabela.addCell(col4);
 			PdfPCell col5 = new PdfPCell(new Paragraph("Preço"));
+			col5.setBackgroundColor(azul);
 			tabela.addCell(col5);
-			String readLista =  "select * from alunos order by nome";
+			PdfPCell col6 = new PdfPCell(new Paragraph ("Imagem"));
+			col6.setBackgroundColor(azul);
+			tabela.addCell(col6);
+
+			
+			String readLista =  "select * from brinquedos order by nome";
 			try {
-				
+				con = dao.conectar();
+				pst = con.prepareStatement(readLista);
+				rs= pst.executeQuery();
+				while (rs.next()) {
+					tabela.addCell(rs.getString(2));
+					tabela.addCell(rs.getString(3));
+					tabela.addCell(rs.getString(4));
+					tabela.addCell(rs.getString(5));
+					tabela.addCell(rs.getString(6));
+					Blob blob  = (Blob) rs.getBlob(7);
+					byte[] imga = blob.getBytes(1, (int) blob.length());
+					com.itextpdf.text.Image image = com.itextpdf.text.Image.getInstance(imga);
+					tabela.addCell(image);
+				}
+				con.close();
 			} catch (Exception ex) {
 				System.out.println(ex);
 			}
-			
-			
-		
+			document.add(tabela);
 		}catch (Exception e) {
 			System.out.println(e);
 		}finally {
 			document.close();
+		}
+		try {
+			Desktop.getDesktop().open(new File("center_toy.pdf"));
+		}catch (Exception e2) {
+			System.out.println(e2);
 		}
 	}
 	
