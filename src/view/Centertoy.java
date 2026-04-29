@@ -57,6 +57,8 @@ import com.itextpdf.text.pdf.PdfWriter;
 import model.Categoria;
 import model.DAO;
 import utils.Validador;
+import javax.swing.UIManager;
+import javax.swing.border.LineBorder;
 
 public class Centertoy extends JFrame {
 	DAO dao = new DAO();
@@ -124,7 +126,7 @@ public class Centertoy extends JFrame {
 		setBounds(100, 100, 994, 604);
 
 		contentPane = new JPanel();
-		contentPane.setBackground(new Color(252, 226, 167));
+		contentPane.setBackground(new Color(255, 226, 168));
 		contentPane.setBorder(null);
 		setContentPane(contentPane);
 		contentPane.setLayout(null);
@@ -132,7 +134,7 @@ public class Centertoy extends JFrame {
 		scrollPaneListar = new JScrollPane();
 		scrollPaneListar.setBorder(null);
 		scrollPaneListar.setVisible(false);
-		scrollPaneListar.setBounds(92, 248, 332, 95);
+		scrollPaneListar.setBounds(90, 198, 332, 95);
 		contentPane.add(scrollPaneListar);
 		
 		listNomes = new JList <String>();
@@ -146,19 +148,19 @@ public class Centertoy extends JFrame {
 		listNomes.setBorder(null);
 
 		JLabel lblNewLabel = new JLabel("Cadastrar produtos");
-		lblNewLabel.setForeground(new Color(0, 103, 206));
+		lblNewLabel.setForeground(new Color(51, 153, 204));
 		lblNewLabel.setFont(new Font("Arial Rounded MT Bold", Font.PLAIN, 47));
 		lblNewLabel.setBounds(352, 32, 473, 67);
 		contentPane.add(lblNewLabel);
 
 		JLabel lblLogo = new JLabel("");
 		lblLogo.setIcon(new ImageIcon(Centertoy.class.getResource("/img/logo (1).png")));
-		lblLogo.setBounds(122, 31, 169, 169);
+		lblLogo.setBounds(109, 0, 169, 169);
 		contentPane.add(lblLogo);
 
 		JLabel lblNome = new JLabel("Nome:");
 		lblNome.setFont(new Font("Arial Rounded MT Bold", Font.PLAIN, 17));
-		lblNome.setBounds(32, 224, 65, 19);
+		lblNome.setBounds(26, 181, 65, 19);
 		contentPane.add(lblNome);
 
 		txtNome = new JTextField();
@@ -182,21 +184,16 @@ public class Centertoy extends JFrame {
 				}
 			}
 		});
-		txtNome.setBounds(81, 226, 332, 20);
+		txtNome.setBounds(90, 180, 332, 20);
 		contentPane.add(txtNome);
 		txtNome.setColumns(10);
 		txtNome.setDocument(new Validador(30));
 
-		JLabel lblDataF = new JLabel("Data da fabricação:");
-		lblDataF.setFont(new Font("Arial Rounded MT Bold", Font.PLAIN, 16));
-		lblDataF.setBounds(26, 248, 157, 37);
-		contentPane.add(lblDataF);
-
 		txtDataF = new JTextField();
 		txtDataF.setHorizontalAlignment(SwingConstants.LEFT);
-		txtDataF.setToolTipText("yyyy-mm-dd");
+		txtDataF.setToolTipText("dd-mm-yyyy");
 		//String fabricacao = txtDataF.getText();
-		txtDataF.setBounds(193, 257, 231, 22);
+		txtDataF.setBounds(191, 211, 231, 22);
 		contentPane.add(txtDataF);
 		txtDataF.setColumns(10);
 		//DateTimeFormatter formato = DateTimeFormatter.ofPattern("dd/MM/yyyy");
@@ -204,35 +201,35 @@ public class Centertoy extends JFrame {
 
 		JLabel lblCate = new JLabel("Categoria:");
 		lblCate.setFont(new Font("Arial Rounded MT Bold", Font.PLAIN, 17));
-		lblCate.setBounds(32, 285, 112, 26);
+		lblCate.setBounds(26, 242, 112, 26);
 		contentPane.add(lblCate);
 
 		
 		//JComboBox<Categoria> comboBoxCategoria;
 		comboBoxCategoria = new JComboBox<>(Categoria.values());
-		comboBoxCategoria.setBounds(123, 290, 301, 22);
+		comboBoxCategoria.setBounds(121, 244, 301, 22);
 		contentPane.add(comboBoxCategoria);
 
 		JLabel lblNewLabel_1 = new JLabel("Faixa Etária:");
 		lblNewLabel_1.setFont(new Font("Arial Rounded MT Bold", Font.PLAIN, 16));
-		lblNewLabel_1.setBounds(32, 324, 107, 19);
+		lblNewLabel_1.setBounds(26, 284, 107, 19);
 		contentPane.add(lblNewLabel_1);
 
 		txtFaixa = new JTextField();
-		txtFaixa.setBounds(136, 324, 288, 20);
+		txtFaixa.setBounds(134, 285, 288, 20);
 		contentPane.add(txtFaixa);
 		txtFaixa.setColumns(10);
 		txtFaixa.setDocument(new Validador(30));
 
 		JLabel lblNewLabel_2 = new JLabel(" Preço:");
 		lblNewLabel_2.setFont(new Font("Arial Rounded MT Bold", Font.PLAIN, 16));
-		lblNewLabel_2.setBounds(32, 354, 65, 19);
+		lblNewLabel_2.setBounds(26, 324, 65, 19);
 		contentPane.add(lblNewLabel_2);
 
 		txtPreco = new JTextField();
 		txtPreco.setToolTipText("R$00.00");
 		txtPreco.setText("");
-		txtPreco.setBounds(92, 355, 332, 20);
+		txtPreco.setBounds(90, 325, 332, 20);
 		contentPane.add(txtPreco);
 		txtPreco.setColumns(10);
 		
@@ -241,10 +238,11 @@ public class Centertoy extends JFrame {
 		lblFoto.setForeground(new Color(255, 255, 255));
 		lblFoto.setIcon(new ImageIcon(Centertoy.class.getResource("/img/Iconcamera.png")));
 		lblFoto.setBackground(new Color(255, 255, 255));
-		lblFoto.setBounds(603, 131, 266, 212);
+		lblFoto.setBounds(586, 163, 266, 212);
 		contentPane.add(lblFoto);
 
 		btnCadastrar = new JButton("Cadastrar");
+		btnCadastrar.setBorder(null);
 		btnCadastrar.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				cadastra();
@@ -252,25 +250,27 @@ public class Centertoy extends JFrame {
 			}
 		});
 		btnCadastrar.setForeground(new Color(255, 255, 255));
-		btnCadastrar.setBackground(new Color(63, 121, 218));
+		btnCadastrar.setBackground(new Color(51, 153, 204));
 		btnCadastrar.setFont(new Font("Arial Rounded MT Bold", Font.PLAIN, 15));
-		btnCadastrar.setBounds(176, 427, 144, 54);
+		btnCadastrar.setBounds(172, 422, 144, 54);
 		contentPane.add(btnCadastrar);
 
 		btnAdicionar = new JButton("Adicionar imagem");
+		btnAdicionar.setBorder(null);
 		btnAdicionar.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				adicionarFoto();
 
 			}
 		});
-		btnAdicionar.setForeground(new Color(0, 128, 255));
-		btnAdicionar.setFont(new Font("Arial Rounded MT Bold", Font.PLAIN, 13));
-		btnAdicionar.setBackground(new Color(255, 221, 26));
-		btnAdicionar.setBounds(647, 370, 160, 54);
+		btnAdicionar.setForeground(new Color(255, 255, 255));
+		btnAdicionar.setFont(new Font("Arial Rounded MT Bold", Font.PLAIN, 14));
+		btnAdicionar.setBackground(new Color(251, 85, 55));
+		btnAdicionar.setBounds(617, 422, 160, 54);
 		contentPane.add(btnAdicionar);
 
 		btnLimpar = new JButton("");
+		btnLimpar.setBorder(null);
 		btnLimpar.setIcon(new ImageIcon(Centertoy.class.getResource("/img/replay.png")));
 		btnLimpar.setToolTipText("Limpar Campo");
 		btnLimpar.addActionListener(new ActionListener() {
@@ -281,11 +281,12 @@ public class Centertoy extends JFrame {
 		});
 		btnLimpar.setForeground(new Color(255, 255, 0));
 		btnLimpar.setFont(new Font("Arial Rounded MT Bold", Font.PLAIN, 13));
-		btnLimpar.setBackground(new Color(250, 61, 33));
-		btnLimpar.setBounds(635, 444, 50, 50);
+		btnLimpar.setBackground(new Color(255, 226, 168));
+		btnLimpar.setBounds(320, 434, 38, 42);
 		contentPane.add(btnLimpar);
 		
 		btnExcluir = new JButton("");
+		btnExcluir.setBorder(null);
 		btnExcluir.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				excluir();
@@ -296,31 +297,33 @@ public class Centertoy extends JFrame {
 		btnExcluir.setIcon(new ImageIcon(Centertoy.class.getResource("/img/trash.png")));
 		btnExcluir.setForeground(Color.YELLOW);
 		btnExcluir.setFont(new Font("Arial Rounded MT Bold", Font.PLAIN, 13));
-		btnExcluir.setBackground(new Color(250, 234, 37));
-		btnExcluir.setBounds(708, 444, 50, 50);
+		btnExcluir.setBackground(new Color(51, 153, 204));
+		btnExcluir.setBounds(787, 438, 38, 38);
 		contentPane.add(btnExcluir);
 		
 		btnEditar = new JButton("");
+		btnEditar.setBorder(null);
 		btnEditar.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				editarProduto();
 			}
 		});
 		btnEditar.setToolTipText("Editar");
-		btnEditar.setIcon(new ImageIcon(Centertoy.class.getResource("/img/edit.png")));
+		btnEditar.setIcon(new ImageIcon(Centertoy.class.getResource("/img/editar1.png")));
 		btnEditar.setForeground(Color.YELLOW);
 		btnEditar.setFont(new Font("Arial Rounded MT Bold", Font.PLAIN, 13));
-		btnEditar.setBackground(new Color(46, 79, 233));
-		btnEditar.setBounds(791, 444, 50, 50);
+		btnEditar.setBackground(new Color(252, 224, 31));
+		btnEditar.setBounds(835, 438, 38, 38);
 		contentPane.add(btnEditar);
 		
 		JLabel lblPesquisar = new JLabel("");
 		lblPesquisar.setIcon(new ImageIcon(Centertoy.class.getResource("/img/search.png")));
 		lblPesquisar.setToolTipText("Pesquisar");
-		lblPesquisar.setBounds(429, 224, 24, 26);
+		lblPesquisar.setBounds(423, 177, 24, 26);
 		contentPane.add(lblPesquisar);
 		
 		btnInfo = new JButton("");
+		btnInfo.setBorder(null);
 		btnInfo.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				Sobre sobre = new Sobre();
@@ -332,6 +335,7 @@ public class Centertoy extends JFrame {
 		contentPane.add(btnInfo);
 		
 		btnPdf = new JButton("");
+		btnPdf.setBorderPainted(false);
 		btnPdf.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				gerarPdf();
@@ -341,8 +345,15 @@ public class Centertoy extends JFrame {
 		btnPdf.setToolTipText("Gerar PDF dos produtos");
 		btnPdf.setBackground(new Color(252, 226, 167));
 		btnPdf.setIcon(new ImageIcon(Centertoy.class.getResource("/img/pdf.png")));
-		btnPdf.setBounds(328, 427, 44, 54);
+		btnPdf.setBounds(444, 163, 44, 54);
 		contentPane.add(btnPdf);
+		
+				JLabel lblDataF = new JLabel("Data da fabricação:");
+				lblDataF.setBounds(26, 211, 332, 20);
+				contentPane.add(lblDataF);
+				lblDataF.setFont(new Font("Arial Rounded MT Bold", Font.PLAIN, 16));
+				
+				this.setLocationRelativeTo(null);
 
 	}
 
